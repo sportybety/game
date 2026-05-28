@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referral Reward System</title>
+<style>
+:root{
+--pri:#2563eb;--pri2:#1d4ed8;--priSoft:#1e3a8a;--bg:#0b1220;--card:#111827;--text:#f8fafc;--muted:#94a3b8;--border:#243044;
+--green:#12b76a;--greenSoft:#052e1b;--red:#f04438;--redSoft:#450a0a;--orange:#f79009;--orangeSoft:#451a03;
+--purple:#7a5af8;--purpleSoft:#2e1065;--shadow:0 18px 45px rgba(0,0,0,.35);--r:20px;
+}
+body.light{
+--bg:#f3f6fb;--card:#ffffff;--text:#101828;--muted:#667085;--border:#e4e7ec;
+--priSoft:#dbeafe;--greenSoft:#ecfdf3;--redSoft:#fef3f2;--orangeSoft:#fffaeb;--purpleSoft:#f4f3ff;
+--shadow:0 18px 45px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:radial-gradient(circle at top left,rgba(37,99,235,.16),transparent 35%),radial-gradient(circle at top right,rgba(122,90,248,.14),transparent 35%),var(--bg);color:var(--text);min-height:100vh;transition:.25s}
+button{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14px}
+button:hover{transform:translateY(-1px)}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-pri{background:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri2)}
+.btn-sec{background:var(--priSoft);color:#93c5fd}.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}.btn-dark{background:#111827;color:#fff}
+.btn-block{width:100%}.icon-btn{width:44px;height:44px;padding:0;border-radius:14px;font-size:18px}
+input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:14px;background:var(--card);color:var(--text);outline:0;margin-top:7px;font-size:15px}
+textarea{min-height:115px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(37,99,235,.18)}
+input[readonly]{opacity:.7;cursor:not-allowed}
+label{display:block;margin-top:14px;font-size:13px;font-weight:900;color:var(--muted)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(11,18,32,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+body.light .nav{background:rgba(255,255,255,.82)}
+.nav-in{max-width:1200px;margin:auto;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:11px;cursor:pointer}
+.logo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;font-weight:950;color:#fff;font-size:20px;background:linear-gradient(135deg,var(--pri),var(--purple));box-shadow:0 12px 26px rgba(37,99,235,.28)}
+.brand b{font-size:18px}.brand small{display:block;color:var(--muted);font-size:11px;font-weight:800}
+.nav-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.container{max-width:1200px;margin:auto;padding:26px 18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.view{display:none}.view.active{display:block}.panel{display:none}.panel.active{display:block}
+.muted{color:var(--muted);line-height:1.6}
+.hero{min-height:calc(100vh - 96px);display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;padding:20px 0}
+.hero-main{position:relative;overflow:hidden;color:#fff;border-radius:34px;padding:46px;background:linear-gradient(135deg,rgba(37,99,235,.98),rgba(122,90,248,.95));box-shadow:var(--shadow)}
+.hero-main:before{content:"";position:absolute;width:330px;height:330px;border-radius:50%;background:rgba(255,255,255,.14);right:-110px;bottom:-110px}
+.hero-main h1{font-size:42px;line-height:1.08;position:relative;z-index:1}.hero-main p{margin-top:16px;font-size:18px;line-height:1.7;opacity:.95;position:relative;z-index:1}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px;position:relative;z-index:1}
+.btn-white{background:#fff;color:var(--pri)}.btn-glass{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.mini-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:0 6px 16px rgba(0,0,0,.15);text-align:center}
+.mini-stat .num{font-size:28px;font-weight:900;margin-top:6px}.mini-stat small{color:var(--muted);font-weight:800;font-size:12px}
+.profit-box{background:linear-gradient(135deg,var(--greenSoft),var(--purpleSoft));border:1px solid var(--border);border-radius:var(--r);padding:22px}
+.profit-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--border)}
+.profit-row:last-child{border-bottom:0;font-weight:900;color:var(--green);font-size:18px}
+.chain-viz{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0}
+.chain-node{background:var(--pri);color:#fff;padding:14px 18px;border-radius:16px;font-weight:900;text-align:center;min-width:90px;box-shadow:0 8px 20px rgba(37,99,235,.25)}
+.chain-node.l2{background:var(--purple)}.chain-node.l3{background:var(--orange)}.chain-node.l4{background:var(--green)}
+.chain-arrow{color:var(--muted);font-size:24px}
+.chain-reward{background:var(--greenSoft);color:var(--green);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:800;margin-top:6px;display:inline-block}
+.earn-table{width:100%;border-collapse:collapse;font-size:15px;margin-top:14px}
+.earn-table th,.earn-table td{padding:14px 12px;text-align:center;border:1px solid var(--border)}
+.earn-table th{background:var(--priSoft);color:#93c5fd;font-weight:900;font-size:13px;text-transform:uppercase}
+.earn-total{background:var(--greenSoft)!important;color:var(--green)!important;font-size:18px}
+.auth-wrap{max-width:980px;margin:auto;display:grid;grid-template-columns:1fr 1.08fr;gap:20px;align-items:start}
+.auth-side{min-height:500px;border-radius:28px;padding:34px;color:#fff;background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(37,99,235,.92));box-shadow:var(--shadow)}
+.auth-side h1{font-size:34px;line-height:1.12}.auth-side p{margin-top:14px;line-height:1.75;opacity:.92}
+.auth-mini{margin-top:22px;display:grid;gap:12px}.auth-mini div{padding:14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.tabs{display:flex;gap:6px;padding:5px;background:rgba(148,163,184,.1);border-radius:16px;margin-bottom:18px}
+.tab{flex:1;background:transparent;color:var(--muted);padding:12px}.tab.active{background:var(--pri);color:#fff;box-shadow:0 5px 15px rgba(37,99,235,.3)}
+.alert{padding:14px 15px;border-radius:15px;margin:14px 0;border:1px solid var(--border);font-size:14px;line-height:1.55}
+.alert-ok{background:var(--greenSoft);color:var(--green);border-color:rgba(18,183,106,.25)}
+.alert-err{background:var(--redSoft);color:#f04438;border-color:rgba(240,68,56,.25)}
+.alert-warn{background:var(--orangeSoft);color:#f79009;border-color:rgba(247,144,9,.25)}
+.alert-info{background:var(--priSoft);color:#93c5fd;border-color:rgba(37,99,235,.25)}
+.badge{display:inline-flex;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:950}
+.badge-green{background:var(--greenSoft);color:var(--green)}.badge-orange{background:var(--orangeSoft);color:#f79009}
+.badge-red{background:var(--redSoft);color:#f04438}.badge-blue{background:var(--priSoft);color:#93c5fd}
+.dash-layout{display:grid;grid-template-columns:265px 1fr;gap:20px}
+.sidebar{position:sticky;top:88px;align-self:start}.side-menu{display:flex;flex-direction:column;gap:8px}
+.side-btn{background:var(--card);color:var(--text);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;text-align:left;font-size:14px}
+.side-btn.active{background:var(--pri);color:#fff;border-color:var(--pri)}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 8px 22px rgba(0,0,0,.2)}
+.stat small{color:var(--muted);font-weight:900;font-size:12px}.stat h3{margin-top:9px;font-size:24px}
+.ref-box{display:flex;gap:10px;align-items:center}.ref-box input{margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:800}
+.tbl-wrap{overflow-x:auto}
+.admin-bar{background:linear-gradient(135deg,#0f172a,#1d4ed8);color:#fff;border-radius:24px;padding:26px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.admin-bar p{color:#93c5fd;margin-top:5px}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.search-bar{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.search-bar input{margin-top:0;flex:1;padding-left:42px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center}
+.search-bar small{color:var(--muted);font-weight:700;white-space:nowrap}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:999;width:62px;height:62px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 16px 35px rgba(37,211,102,.35)}
+.whatsapp-float svg{width:34px;height:34px;fill:#fff}
+.footer{text-align:center;color:var(--muted);padding:32px 18px;font-size:14px}
+.notify-dot{width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;margin-left:5px;vertical-align:middle;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,68,56,.6)}70%{box-shadow:0 0 0 8px rgba(240,68,56,0)}100%{box-shadow:0 0 0 0 rgba(240,68,56,0)}}
+@media(max-width:920px){
+.hero,.auth-wrap,.dash-layout,.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+.hero{min-height:auto;padding-top:20px}.hero-main h1{font-size:32px}
+.sidebar{position:static}.side-menu{display:grid;grid-template-columns:1fr 1fr}
+.chain-viz{flex-direction:column}.chain-arrow{transform:rotate(90deg)}
+}
+@media(max-width:560px){
+.hero-main{padding:28px;border-radius:24px}.hero-main h1{font-size:28px}
+.side-menu{grid-template-columns:1fr}.ref-box,.hero-actions{flex-direction:column}
+.profit-row{flex-direction:column;gap:6px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-in">
+<div class="brand" onclick="go('home')">
+<div class="logo">R</div>
+<div><b data-t="brand">Referral Reward</b><small data-t="brandSub">4-Level Reward Platform</small></div>
+</div>
+<div class="nav-actions">
+<button class="btn-sec icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme">🌞</button>
+<button class="btn-sec icon-btn" onclick="toggleLang()" id="langBtn" title="Toggle Language">🌐 EN</button>
+<button class="btn-sec" onclick="go('home')" data-t="home">Home</button>
+<button class="btn-pri" onclick="go('auth')" id="navAuth" data-t="loginRegister">Login / Register</button>
+<button class="btn-red" onclick="logout()" id="navLogout" style="display:none" data-t="logout">🚪 Logout</button>
+</div>
+</div>
+</nav>
+
+<!-- HOME -->
+<main id="v-home" class="view active">
+<div class="container">
+<section class="hero">
+<div class="hero-main">
+<h1 data-t="heroTitle">Build Your Network & Earn Through 4 Levels of Referrals</h1>
+<p data-t="heroText">Join with TZS 13,000, share your referral link, and earn rewards up to Level 4 every time your network grows. The system handles everything automatically.</p>
+<div class="hero-actions">
+<button class="btn-white" onclick="go('auth')" data-t="startNow">Start Now</button>
+<button class="btn-glass" onclick="go('auth')" data-t="haveAccount">I Have an Account</button>
+</div>
+</div>
+<div>
+<div class="grid-2">
+<div class="mini-stat"><small data-t="joiningFee">Joining Fee</small><div class="num" style="color:var(--pri)">TZS 13,000</div></div>
+<div class="mini-stat"><small>Level 1</small><div class="num" style="color:var(--pri)">TZS 3,000</div></div>
+<div class="mini-stat"><small>Level 2</small><div class="num" style="color:var(--purple)">TZS 2,000</div></div>
+<div class="mini-stat"><small>Level 3</small><div class="num" style="color:var(--orange)">TZS 1,500</div></div>
+<div class="mini-stat"><small>Level 4</small><div class="num" style="color:var(--green)">TZS 1,000</div></div>
+<div class="mini-stat"><small data-t="totalRewards">Total Rewards</small><div class="num" style="color:var(--green)">TZS 7,500</div></div>
+</div>
+</div>
+</section>
+
+<div style="margin:32px 0 14px"><h2 data-t="rewardStructure">💰 Reward Structure</h2></div>
+<div class="grid-2">
+<div class="card">
+<h3 data-t="perChain">📊 Per Referral Chain</h3>
+<div class="profit-box" style="margin-top:14px">
+<div class="profit-row"><span>Level 1 Reward</span><span>TZS 3,000</span></div>
+<div class="profit-row"><span>Level 2 Reward</span><span>TZS 2,000</span></div>
+<div class="profit-row"><span>Level 3 Reward</span><span>TZS 1,500</span></div>
+<div class="profit-row"><span>Level 4 Reward</span><span>TZS 1,000</span></div>
+<div class="profit-row" style="border-top:2px solid var(--green);margin-top:8px;padding-top:12px"><span data-t="totalReferralRewards">Total Referral Rewards</span><span>TZS 7,500</span></div>
+</div>
+</div>
+<div class="card">
+<h3 data-t="chainTitle">🔗 4-Level Referral Chain</h3>
+<div class="chain-viz">
+<div class="chain-node" data-t="you">You</div><div class="chain-arrow">➤</div>
+<div class="chain-node l2">L1<br><span class="chain-reward">3,000</span></div><div class="chain-arrow">➤</div>
+<div class="chain-node l3">L2<br><span class="chain-reward">2,000</span></div><div class="chain-arrow">➤</div>
+<div class="chain-node" style="background:var(--orange)">L3<br><span class="chain-reward">1,500</span></div><div class="chain-arrow">➤</div>
+<div class="chain-node l4">L4<br><span class="chain-reward">1,000</span></div>
+</div>
+</div>
+</div>
+
+<div style="margin:32px 0 14px"><h2 data-t="earningsPotential">📈 Earnings Potential</h2></div>
+<div class="card">
+<table class="earn-table">
+<thead><tr><th data-t="level">Level</th><th data-t="members">Members</th><th data-t="rewardEach">Reward Each</th><th data-t="total">Total</th></tr></thead>
+<tbody>
+<tr><td><span class="badge badge-blue">L1</span></td><td>5</td><td>TZS 3,000</td><td>TZS 15,000</td></tr>
+<tr><td><span class="badge" style="background:var(--purpleSoft);color:var(--purple)">L2</span></td><td>25</td><td>TZS 2,000</td><td>TZS 50,000</td></tr>
+<tr><td><span class="badge badge-orange">L3</span></td><td>125</td><td>TZS 1,500</td><td>TZS 187,500</td></tr>
+<tr><td><span class="badge badge-green">L4</span></td><td>625</td><td>TZS 1,000</td><td>TZS 625,000</td></tr>
+<tr class="earn-total"><td colspan="3" data-t="totalPotential">Total Potential Earnings</td><td>TZS 877,500</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+
+<!-- AUTH -->
+<main id="v-auth" class="view">
+<div class="container">
+<div class="auth-wrap">
+<div class="auth-side">
+<h1 data-t="welcome">Welcome</h1>
+<p data-t="authDesc">Login with your username and password. New accounts go straight to payment activation page.</p>
+<div class="auth-mini">
+<div><b data-t="autoRedirect">Auto Redirect After Register</b><p data-t="autoRedirectDesc">New account → straight to payment activation page.</p></div>
+<div><b data-t="adminNotified">Admin Notified Instantly</b><p data-t="adminNotifiedDesc">Admin sees your payment submission immediately.</p></div>
+<div><b data-t="rejectionForm">Rejection? Form Reopens</b><p data-t="rejectionFormDesc">If rejected, you are notified and can resubmit.</p></div>
+</div>
+</div>
+<div class="card">
+<div class="tabs">
+<button class="tab active" onclick="authTab('login',this)" data-t="login">Login</button>
+<button class="tab" onclick="authTab('register',this)" data-t="register">Register</button>
+</div>
+<section id="p-login" class="panel active">
+<h2 data-t="loginTitle">Login</h2>
+<label data-t="username">Username</label><input id="loginUsername" placeholder="Username">
+<label data-t="password">Password</label><input id="loginPass" type="password" placeholder="Password">
+<div id="loginMsg"></div>
+<button class="btn-pri btn-block" style="margin-top:18px" onclick="handleLogin()" data-t="loginBtn">Login</button>
+</section>
+<section id="p-register" class="panel">
+<h2 data-t="createAccount">Create Account</h2>
+<label data-t="username">Username</label><input id="regUsername" placeholder="Username">
+<label data-t="phone">Phone</label><input id="regPhone" placeholder="0712345678">
+<label data-t="password">Password</label><input id="regPass" type="password" placeholder="Min 8 characters">
+<label data-t="confirmPassword">Confirm Password</label><input id="regConfirmPass" type="password" placeholder="Repeat password">
+<label><span data-t="referralCode">Referral Code</span> <span style="font-weight:400;color:var(--muted)" data-t="optional">(optional)</span></label>
+<input id="regRef" placeholder="REF-A1B2C3">
+<div id="regMsg"></div>
+<button class="btn-pri btn-block" style="margin-top:18px" onclick="handleRegister()" data-t="registerBtn">Register & Proceed to Payment →</button>
+</section>
+</div>
+</div>
+</main>
+
+<!-- USER DASHBOARD -->
+<main id="v-user" class="view">
+<div class="container">
+<div id="userActivationArea" style="display:none">
+<div id="rejectedBanner" style="display:none"><div class="alert alert-err"><b data-t="paymentRejectedTitle">❌ Payment Rejected:</b> <span data-t="paymentRejectedDesc">Admin rejected your payment. Please check your SMS and Reference then resubmit.</span></div></div>
+<div id="pendingBanner" style="display:none"><div class="alert alert-warn"><b data-t="paymentPendingTitle">⏳ Payment Pending Verification:</b> <span data-t="paymentPendingDesc">Admin will verify shortly. You will be notified.</span></div></div>
+<div class="grid-2" style="align-items:start">
+<div class="card">
+<h2 style="color:#93c5fd" data-t="activateAccount">💳 Activate Your Account</h2>
+<p class="muted" style="margin-top:10px" data-t="activateDesc">Pay the joining fee then submit your payment SMS here.</p>
+<div style="margin-top:18px;background:var(--priSoft);border-radius:18px;padding:20px">
+<p style="font-weight:900;color:#93c5fd;margin-bottom:12px" data-t="paymentSteps">💡 Payment Steps</p>
+<ol style="margin:0;padding-left:20px;color:var(--muted);line-height:2.1;font-size:14px">
+<li data-t="step1">Open your mobile money app.</li>
+<li data-t="step2">Select Pay Bill / Lipa Namba.</li>
+<li><span data-t="step3">Enter number:</span> <b id="showBusiness">123456</b></li>
+<li data-t="step4">Enter amount: <b>TZS 13,000</b></li>
+<li data-t="step5">Confirm payment and wait for SMS.</li>
+<li data-t="step6">Copy the full SMS and paste below.</li>
+</ol>
+</div>
+</div>
+<div class="card">
+<h2 data-t="submitPayment">📤 Submit Payment SMS</h2>
+<div id="actFormArea">
+<label data-t="paymentSms">Payment SMS</label><textarea id="actSms" placeholder="Paste full SMS here..."></textarea>
+<label data-t="transactionRef">Transaction Reference</label><input id="actRef" placeholder="MPESA123ABC">
+<button class="btn-green btn-block" style="margin-top:16px" onclick="submitActivationPayment()" data-t="submitBtn">📤 Submit for Verification</button>
+</div>
+<div id="actMsg"></div>
+<div id="pendingFormMsg" style="display:none"><div class="alert alert-warn" data-t="submissionReceived">✅ Submission received. Awaiting admin verification.</div></div>
+</div>
+</div>
+</div>
+
+<div id="mainDashboard" style="display:none">
+<div class="dash-layout">
+<aside class="sidebar">
+<div class="card">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<div class="logo" id="userAvatar">U</div>
+<div><b id="userName">User</b><div class="muted" style="font-size:12px">USER • <span class="badge badge-green" data-t="active">ACTIVE</span></div></div>
+</div>
+<div class="side-menu">
+<button class="side-btn active" onclick="userTab('u-overview',this)">🏠 <span data-t="overview">Overview</span></button>
+<button class="side-btn" onclick="userTab('u-referrals',this)">🔗 <span data-t="referrals">Referrals</span></button>
+<button class="side-btn" onclick="userTab('u-wallet',this)">💰 <span data-t="wallet">Wallet</span></button>
+<button class="side-btn" onclick="userTab('u-withdraw',this)">🏧 <span data-t="withdraw">Withdraw</span></button>
+<button class="side-btn" onclick="userTab('u-notify',this)">🔔 <span data-t="notifications">Notifications</span> <span id="userNotifDot" class="notify-dot" style="display:none"></span></button>
+</div>
+</aside>
+<section>
+<div id="userTopNotif" style="display:none;margin-bottom:16px"></div>
+<div class="grid-4">
+<div class="stat"><small data-t="availableBalance">Available Balance</small><h3 id="dashAvailable">TZS 0</h3></div>
+<div class="stat"><small data-t="totalEarned">Total Earned</small><h3 id="dashEarned">TZS 0</h3></div>
+<div class="stat"><small data-t="pendingWithdrawal">Pending Withdrawal</small><h3 id="dashPendingWd">TZS 0</h3></div>
+<div class="stat"><small data-t="totalReferrals">Total Referrals</small><h3 id="dashTotalRefs">0</h3></div>
+</div>
+
+<div id="u-overview" class="panel active">
+<div class="card" style="margin-top:18px">
+<h2 data-t="yourDashboard">Your Dashboard</h2>
+<div id="qualificationBox"></div>
+<h3 style="margin-top:20px" data-t="yourReferralLink">Your Referral Link</h3>
+<div class="ref-box" style="margin-top:10px">
+<input id="refLink" readonly>
+<button class="btn-pri" onclick="copyRef()" data-t="copy">Copy</button>
+</div>
+</div>
+<div class="card">
+<h3 data-t="accountInfo">👤 Account Info</h3>
+<p style="margin-top:10px"><b data-t="username">Username:</b> <span id="infoUsername"></span></p>
+<p><b data-t="phone">Phone:</b> <span id="infoPhone"></span></p>
+</div>
+</div>
+
+<div id="u-referrals" class="panel">
+<div class="card" style="margin-top:18px">
+<h2 data-t="myReferrals">🔗 My Referrals</h2>
+<p class="muted" data-t="referralsDesc">People who joined using your referral link.</p>
+<div class="tbl-wrap" style="margin-top:14px">
+<table>
+<thead><tr><th data-t="username">Username</th><th data-t="phone">Phone</th><th data-t="level">Level</th><th data-t="amount">Amount</th><th data-t="paymentStatus">Payment Status</th></tr></thead>
+<tbody id="referralsRows"><tr><td colspan="5" class="muted" data-t="noReferrals">No referrals yet. Share your referral link to invite people.</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="u-wallet" class="panel">
+<div class="card" style="margin-top:18px">
+<h2 data-t="wallet">💰 Wallet</h2>
+<div class="grid-4" style="margin-top:14px">
+<div class="stat"><small data-t="balance">Balance</small><h3 id="walletBalance">TZS 0</h3></div>
+<div class="stat"><small data-t="pending">Pending</small><h3 id="walletPending">TZS 0</h3></div>
+<div class="stat"><small data-t="available">Available</small><h3 id="walletAvailable">TZS 0</h3></div>
+<div class="stat"><small data-t="totalWithdrawn">Total Withdrawn</small><h3 id="walletWithdrawn">TZS 0</h3></div>
+</div>
+</div>
+<div class="card">
+<h3 data-t="transactionHistory">📜 Transaction History</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>ID</th><th data-t="type">Type</th><th data-t="source">Source</th><th data-t="amount">Amount</th><th data-t="status">Status</th><th data-t="balanceAfter">Balance After</th></tr></thead>
+<tbody id="transactionsRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="u-withdraw" class="panel">
+<div class="card" style="margin-top:18px">
+<h2 data-t="requestWithdrawal">🏧 Request Withdrawal</h2>
+<div id="withdrawEligibilityBox"></div>
+<p class="muted"><span data-t="min">Minimum:</span> <b>TZS 5,000</b>. <span data-t="max">Maximum:</span> <b>TZS 1,000,000</b>.</p>
+<div class="alert alert-warn" data-t="withdrawalRule">Withdrawals sent to registered phone only. 10% fee applies.</div>
+<label data-t="amount">Amount to Withdraw</label>
+<input id="wdAmount" type="number" placeholder="5000" oninput="calculateWithdrawalPreview()">
+<div id="withdrawPreview" class="alert alert-info" style="display:none"></div>
+<label data-t="paymentMethod">Payment Method</label>
+<select id="wdMethod"><option>MPESA</option><option>AIRTEL MONEY</option><option>TIGOPESA</option></select>
+<label data-t="registeredPhone">Registered Phone</label>
+<input id="wdPhone" readonly>
+<button class="btn-pri" style="margin-top:16px" id="wdBtn" onclick="requestWithdrawal()" data-t="submitWithdrawal">Submit Withdrawal Request</button>
+<div id="wdMsg"></div>
+</div>
+<div class="card">
+<h3 data-t="withdrawalHistory">Withdrawal History</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>ID</th><th data-t="gross">Gross</th><th>Fee 10%</th><th>Net 90%</th><th data-t="status">Status</th></tr></thead>
+<tbody id="withdrawRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="u-notify" class="panel">
+<div class="card" style="margin-top:18px">
+<h2 data-t="notifications">🔔 Notifications</h2>
+<div id="notificationList"></div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+
+<!-- ADMIN DASHBOARD -->
+<main id="v-admin" class="view">
+<div class="container">
+<div id="adminNotifArea" style="display:none;margin-bottom:18px"></div>
+<div class="admin-bar">
+<div><h2>🔷 Admin Dashboard</h2><p>Verify payments, manage users, withdrawals, referrals, balance edits, settings & audit logs.</p></div>
+<button class="btn-red" onclick="logout()">🚪 Logout</button>
+</div>
+<div class="admin-tabs">
+<button class="btn-pri adm-btn" onclick="adminTab('a-analytics',this)">📊 Analytics</button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-payments',this)">💳 Payments <span id="payDot" class="notify-dot" style="display:none"></span></button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-referralReqs',this)">🔗 Referral Reqs <span id="refDot" class="notify-dot" style="display:none"></span></button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-withdrawals',this)">🏧 Withdrawals <span id="wdDot" class="notify-dot" style="display:none"></span></button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-users',this)">👥 Users</button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-balance',this)">⚖️ Balance Edit</button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-settings',this)">⚙️ Settings</button>
+<button class="btn-sec adm-btn" onclick="adminTab('a-audit',this)">📋 Audit</button>
+</div>
+
+<!-- ANALYTICS -->
+<div id="a-analytics" class="panel active">
+<div class="grid-4">
+<div class="stat"><small>Total Users</small><h3 id="sTotalUsers">0</h3></div>
+<div class="stat"><small>Active Users</small><h3 id="sActiveUsers">0</h3></div>
+<div class="stat"><small>Pending Users</small><h3 id="sPendingUsers">0</h3></div>
+<div class="stat"><small>Total Payments</small><h3 id="sTotalPay">TZS 0</h3></div>
+</div>
+<div class="grid-4" style="margin-top:18px">
+<div class="stat"><small>Pending Payments</small><h3 id="sPendingPay">0</h3></div>
+<div class="stat"><small>Rewards Distributed</small><h3 id="sRewards">TZS 0</h3></div>
+<div class="stat"><small>Level 1 Rewards</small><h3 id="sL1">TZS 0</h3></div>
+<div class="stat"><small>Level 2 Rewards</small><h3 id="sL2">TZS 0</h3></div>
+</div>
+<div class="grid-4" style="margin-top:18px">
+<div class="stat"><small>Level 3 Rewards</small><h3 id="sL3">TZS 0</h3></div>
+<div class="stat"><small>Level 4 Rewards</small><h3 id="sL4">TZS 0</h3></div>
+<div class="stat"><small>Total Withdrawals</small><h3 id="sTotalWd">TZS 0</h3></div>
+<div class="stat"><small>Pending Withdrawals</small><h3 id="sPendingWd">TZS 0</h3></div>
+</div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="a-payments" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>💳 Payment Submissions</h2>
+<div class="search-bar">
+<input type="text" id="searchPayments" placeholder="🔍 Search by username, phone, or reference..." oninput="renderAdminPayments()">
+<small id="paymentsCount">0 results</small>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Username</th><th>Phone</th><th>Reference</th><th>SMS</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead>
+<tbody id="adminPaymentRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- REFERRAL REQS -->
+<div id="a-referralReqs" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>🔗 Referral Verification Requests</h2>
+<div class="search-bar">
+<input type="text" id="searchReferrals" placeholder="🔍 Search by parent or child username..." oninput="renderAdminReferralRequests()">
+<small id="referralsCount">0 results</small>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Parent</th><th>Child</th><th>Phone</th><th>Level</th><th>Reward</th><th>Action</th></tr></thead>
+<tbody id="adminReferralsRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- WITHDRAWALS -->
+<div id="a-withdrawals" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>🏧 Withdrawal Requests</h2>
+<div class="search-bar">
+<input type="text" id="searchWithdrawals" placeholder="🔍 Search by username or phone..." oninput="renderAdminWithdrawalRequests()">
+<small id="withdrawalsCount">0 results</small>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Username</th><th>Phone</th><th>Gross</th><th>Fee (10%)</th><th>Net (90%)</th><th>Status</th><th>Submitted</th><th>Qualified</th><th>Action</th></tr></thead>
+<tbody id="adminWithdrawRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- USERS -->
+<div id="a-users" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>👥 Users</h2>
+<div class="search-bar">
+<input type="text" id="searchUsers" placeholder="🔍 Search by username or phone..." oninput="renderAdminUsers()">
+<small id="usersCount">0 results</small>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Username</th><th>Phone</th><th>Payment</th><th>Status</th><th>Referrals</th><th>Earnings</th></tr></thead>
+<tbody id="adminUsersRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- BALANCE EDIT -->
+<div id="a-balance" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>🔍 Search User</h2>
+<div class="search-bar">
+<input type="text" id="searchBalanceUsers" placeholder="🔍 Type to find user..." oninput="renderBalanceSearchUsers()">
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Username</th><th>Phone</th><th>Balance</th><th>Pick</th></tr></thead>
+<tbody id="balanceSearchRows"></tbody>
+</table>
+</div>
+</div>
+<div class="grid-2" style="margin-top:18px">
+<div class="card">
+<h2>⚖️ Edit Wallet Balance</h2>
+<div class="alert alert-warn">Requires admin password confirmation.</div>
+<label>Username</label><input id="balUser" placeholder="Username">
+<label>Mode</label><select id="balMode"><option value="ADD">ADD</option><option value="SUB">SUB</option><option value="SET">SET</option></select>
+<label>Amount</label><input id="balAmount" type="number" placeholder="5000">
+<label>Reason</label><input id="balReason" placeholder="Reason">
+<button class="btn-pri" style="margin-top:16px" onclick="adminBalanceEdit()">Apply Change</button>
+</div>
+<div class="card">
+<h2>👤 Change User Status</h2>
+<div class="alert alert-warn">Requires admin password confirmation.</div>
+<label>Username</label><input id="statusUser" placeholder="Username">
+<label>New Status</label><select id="statusValue"><option value="ACTIVE">ACTIVE</option><option value="PENDING">PENDING</option><option value="SUSPENDED">SUSPENDED</option><option value="BLOCKED">BLOCKED</option></select>
+<label>Reason</label><input id="statusReason" placeholder="Reason">
+<button class="btn-dark" style="margin-top:16px" onclick="adminChangeStatus()">Change Status</button>
+</div>
+</div>
+</div>
+
+<!-- SETTINGS -->
+<div id="a-settings" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>⚙️ Settings</h2>
+<div class="alert alert-warn">Requires admin password confirmation.</div>
+<div class="grid-2">
+<div><label>Joining Fee</label><input id="setFee" type="number"></div>
+<div><label>Min Withdrawal</label><input id="setMinWd" type="number"></div>
+<div><label>Max Withdrawal</label><input id="setMaxWd" type="number"></div>
+<div><label>Withdrawal Fee %</label><input id="setFeePct" type="number"></div>
+<div><label>Level 1 Reward</label><input id="setL1" type="number"></div>
+<div><label>Level 2 Reward</label><input id="setL2" type="number"></div>
+<div><label>Level 3 Reward</label><input id="setL3" type="number"></div>
+<div><label>Level 4 Reward</label><input id="setL4" type="number"></div>
+<div><label>Business Number</label><input id="setBusiness"></div>
+<div><label>Provider</label><input id="setProvider"></div>
+</div>
+<button class="btn-pri" style="margin-top:16px" onclick="adminSaveSettings()">Save Settings</button>
+</div>
+</div>
+
+<!-- AUDIT -->
+<div id="a-audit" class="panel">
+<div class="card" style="margin-top:18px">
+<h2>📋 Audit Logs</h2>
+<div class="search-bar">
+<input type="text" id="searchAudit" placeholder="🔍 Search by username, action, target..." oninput="renderAdminAudit()">
+<small id="auditCount">0 results</small>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Action</th><th>Username</th><th>Target</th><th>Details</th><th>Timestamp</th></tr></thead>
+<tbody id="auditRows"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<a class="whatsapp-float" href="https://wa.me/255712345678?text=Hello%20Support" target="_blank">
+<svg viewBox="0 0 32 32"><path d="M16.04 3C9.42 3 4.03 8.38 4.03 15c0 2.64.86 5.08 2.32 7.06L4 29l7.14-2.29A11.9 11.9 0 0 0 16.04 27C22.66 27 28.05 21.62 28.05 15S22.66 3 16.04 3zm0 21.78c-1.58 0-3.05-.45-4.3-1.23l-.31-.19-4.23 1.36 1.38-4.1-.21-.34A9.71 9.71 0 0 1 10.01 15c0-3.32 2.69-6.03 6.03-6.03 3.32 0 6.03 2.69 6.03 6.03 0 3.32-2.71 6.03-6.03 6.03zm3.31-4.54c-.18-.09-1.07-.53-1.23-.59-.17-.06-.29-.09-.41.09-.12.18-.47.59-.58.71-.11.13-.22.15-.4.06-.18-.09-.76-.28-1.45-.89-.54-.48-.9-.107-1.23-1.62-.13-.29-.02-.45.13-.6.13-.13.29-.35.44-.52.15-.17.2-.29.29-.49.1-.19.05-.37-.02-.45-.09-.1-.35-.52-.49-.73-.13-.2-.27-.18-.41-.18-.13 0-.29-.02-.45-.02-.16 0-.41.06-.63.29-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.49.12.17 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.09.47-.07 1.07-.44 1.23-.86.15-.42.15-.79.11-.86-.05-.09-.18-.14-.36-.23z"/></svg>
+</a>
+
+<div class="footer">Referral Reward System © 2026 | 4-Level Reward Platform</div>
+
+<script>
+/* ============================================================
+   ⚠️ MUHIMU: BADILISHA API_URL HAPA CHINI
+   ============================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbxEPBkGS5svAQjEGcSYbSsKm5FR_cPhx-vjmpHq_CSXQmrroqOf403QM2mgwrC6-JmXkQ/exec";
+/* ============================================================ */
+
+/* ==== SETTINGS ==== */
+const SETTINGS = {
+  joiningFee:13000, minWithdraw:5000, maxWithdraw:1000000, feePercent:10,
+  l1:3000, l2:2000, l3:1500, l4:1000, business:"123456", provider:"MPESA"
+};
+
+/* ==== I18N ==== */
+let lang = "en";
+const T = {
+  en:{
+    brand:"Referral Reward", brandSub:"4-Level Reward Platform", home:"Home",
+    loginRegister:"Login / Register", logout:"🚪 Logout", heroTitle:"Build Your Network & Earn Through 4 Levels of Referrals",
+    heroText:"Join with TZS 13,000, share your referral link, and earn rewards up to Level 4 every time your network grows. The system handles everything automatically.",
+    startNow:"Start Now", haveAccount:"I Have an Account", joiningFee:"Joining Fee",
+    totalRewards:"Total Rewards", rewardStructure:"💰 Reward Structure", perChain:"📊 Per Referral Chain",
+    totalReferralRewards:"Total Referral Rewards", chainTitle:"🔗 4-Level Referral Chain", you:"You", earningsPotential:"📈 Earnings Potential",
+    level:"Level", members:"Members", rewardEach:"Reward Each", total:"Total",
+    totalPotential:"Total Potential Earnings", welcome:"Welcome", authDesc:"Login with your username and password. New accounts go straight to payment activation page.",
+    autoRedirect:"Auto Redirect After Register", autoRedirectDesc:"New account → straight to payment activation page.",
+    adminNotified:"Admin Notified Instantly", adminNotifiedDesc:"Admin sees your payment submission immediately.",
+    rejectionForm:"Rejection? Form Reopens", rejectionFormDesc:"If rejected, you are notified and can resubmit.",
+    login:"Login", register:"Register", loginTitle:"Login", createAccount:"Create Account",
+    username:"Username", password:"Password", phone:"Phone",
+    confirmPassword:"Confirm Password", referralCode:"Referral Code", optional:"(optional)", loginBtn:"Login", registerBtn:"Register & Proceed to Payment →",
+    paymentRejectedTitle:"❌ Payment Rejected:", paymentRejectedDesc:"Admin rejected your payment. Please check your SMS and Reference then resubmit.",
+    paymentPendingTitle:"⏳ Payment Pending Verification:", paymentPendingDesc:"Admin will verify shortly. You will be notified.",
+    activateAccount:"💳 Activate Your Account", activateDesc:"Pay the joining fee then submit your payment SMS here.",
+    paymentSteps:"💡 Payment Steps", step1:"Open your mobile money app.", step2:"Select Pay Bill / Lipa Namba.",
+    step3:"Enter number:", step4:"Enter amount: TZS 13,000", step5:"Confirm payment and wait for SMS.",
+    step6:"Copy the full SMS and paste below.", submitPayment:"📤 Submit Payment SMS",
+    paymentSms:"Payment SMS", transactionRef:"Transaction Reference", submitBtn:"📤 Submit for Verification",
+    submissionReceived:"✅ Submission received. Awaiting admin verification.",
+    overview:"Overview", referrals:"Referrals", wallet:"Wallet", withdraw:"Withdraw",
+    notifications:"Notifications", active:"ACTIVE", availableBalance:"Available Balance", totalEarned:"Total Earned",
+    pendingWithdrawal:"Pending Withdrawal", totalReferrals:"Total Referrals",
+    yourDashboard:"Your Dashboard", yourReferralLink:"Your Referral Link", copy:"Copy",
+    accountInfo:"👤 Account Info", myReferrals:"🔗 My Referrals",
+    referralsDesc:"People who joined using your referral link.", noReferrals:"No referrals yet. Share your referral link to invite people.",
+    amount:"Amount", paymentStatus:"Payment Status", balance:"Balance",
+    pending:"Pending", available:"Available",
+    totalWithdrawn:"Total Withdrawn", transactionHistory:"📜 Transaction History",
+    type:"Type", source:"Source",
+    status:"Status", balanceAfter:"Balance After", requestWithdrawal:"🏧 Request Withdrawal",
+    min:"Minimum:", max:"Maximum:", withdrawalRule:"Withdrawals sent to registered phone only. 10% fee applies.",
+    paymentMethod:"Payment Method", registeredPhone:"Registered Phone",
+    submitWithdrawal:"Submit Withdrawal Request", withdrawalHistory:"Withdrawal History", gross:"Gross",
+    qualWarn:"⚠️ You need 2 active direct referrals to withdraw.",
+    qualOk:"✅ You qualify for withdrawals.",
+    qualElgErr:"❌ You need 2 active direct referrals.",
+    qualElgOk:"✅ You qualify. Enter amount below."
+  },
+  sw:{
+    brand:"Referral Reward", brandSub:"Mfumo wa Tuzo 4-Level", home:"Nyumbani",
+    loginRegister:"Ingia / Jisajili", logout:"🚪 Toka", heroTitle:"Jenga Mtandao Wako & Pata Tuzo Kupitia Viwango 4 vya Referral",
+    heroText:"Jiunge kwa TZS 13,000, shiriki kiungo chako cha referral, na upate tuzo hadi Level 4 kila wakati mtandao wako unakua. Mfumo unashughulikia kila kitu kiotomatiki.",
+    startNow:"Anza Sasa", haveAccount:"Nina Akaunti", joiningFee:"Ada ya Kujiunga",
+    totalRewards:"Jumla ya Tuzo", rewardStructure:"💰 Muundo wa Tuzo", perChain:"📊 Kwa Kila Mlolongo wa Referral",
+    totalReferralRewards:"Jumla ya Tuzo za Referral", chainTitle:"🔗 Mlolongo wa Referral wa Viwango 4", you:"Wewe", earningsPotential:"📈 Uwezo wa Mapato",
+    level:"Kiwango", members:"Wanachama", rewardEach:"Tuzo Kila Mmoja", total:"Jumla",
+    totalPotential:"Jumla ya Mapato Yanayowezekana", welcome:"Karibu", authDesc:"Ingia kwa jina lako la mtumiaji na nenosiri. Akaunti mpya zinaelekea moja kwa moja kwenye ukurasa wa malipo.",
+    autoRedirect:"Kupelekwa Kiotomatiki Baada ya Kujisajili", autoRedirectDesc:"Akaunti mpya → moja kwa moja kwenye ukurasa wa malipo.",
+    adminNotified:"Admin Anajulishwa Mara Moja", adminNotifiedDesc:"Admin anaona mawasilisho yako ya malipo mara moja.",
+    rejectionForm:"Kukataliwa? Fomu Inafunguka Upya", rejectionFormDesc:"Ukikataliwa, utajulishwa na unaweza kutuma tena.",
+    login:"Ingia", register:"Jisajili", loginTitle:"Ingia", createAccount:"Fungua Akaunti",
+    username:"Jina la Mtumiaji", password:"Nenosiri", phone:"Simu",
+    confirmPassword:"Thibitisha Nenosiri", referralCode:"Msimbo wa Referral", optional:"(si lazima)", loginBtn:"Ingia", registerBtn:"Jisajili & Endelea Kwenye Malipo →",
+    paymentRejectedTitle:"❌ Malipo Yamekataliwa:", paymentRejectedDesc:"Admin amekataa malipo yako. Tafadhali angalia SMS na Kumbukumbu kisha utume tena.",
+    paymentPendingTitle:"⏳ Malipo Yanasubiri Uthibitisho:", paymentPendingDesc:"Admin atathibitisha hivi karibuni. Utajulishwa.",
+    activateAccount:"💳 Amilisha Akaunti Yako", activateDesc:"Lipa ada kisha utume SMS ya malipo hapa.",
+    paymentSteps:"💡 Hatua za Malipo", step1:"Fungua programu ya pesa za simu.", step2:"Chagua Lipa Bili / Lipa Namba.",
+    step3:"Weka namba:", step4:"Weka kiasi: TZS 13,000", step5:"Thibitisha malipo na usubiri SMS.",
+    step6:"Nakili SMS nzima na ubandike hapa chini.", submitPayment:"📤 Tuma SMS ya Malipo",
+    paymentSms:"SMS ya Malipo", transactionRef:"Kumbukumbu ya Muamala", submitBtn:"📤 Tuma kwa Uthibitisho",
+    submissionReceived:"✅ Mawasilisho yamepokelewa. Inasubiri uthibitisho wa admin.",
+    overview:"Muhtasari", referrals:"Referrals", wallet:"Mkoba", withdraw:"Toa Pesa",
+    notifications:"Arifa", active:"AMILIFU", availableBalance:"Salio Linalopatikana", totalEarned:"Jumla Iliyopatikana",
+    pendingWithdrawal:"Uondoaji Unaongoja", totalReferrals:"Jumla ya Referrals",
+    yourDashboard:"Dashibodi Yako", yourReferralLink:"Kiungo Chako cha Referral", copy:"Nakili",
+    accountInfo:"👤 Maelezo ya Akaunti", myReferrals:"🔗 Referrals Zangu",
+    referralsDesc:"Watu waliojiunga kwa kutumia kiungo chako cha referral.", noReferrals:"Bado hakuna referrals. Shiriki kiungo chako cha referral kuwaalika watu.",
+    amount:"Kiasi", paymentStatus:"Hali ya Malipo", balance:"Salio",
+    pending:"Inasubiri", available:"Inayopatikana",
+    totalWithdrawn:"Jumla Iliyotolewa", transactionHistory:"📜 Historia ya Muamala",
+    type:"Aina", source:"Chanzo",
+    status:"Hali", balanceAfter:"Salio Baada", requestWithdrawal:"🏧 Omba Uondoaji",
+    min:"Kiwango cha chini:", max:"Kiwango cha juu:", withdrawalRule:"Uondoaji unatumwa kwa simu iliyosajiliwa tu. Ada ya 10% inatumika.",
+    paymentMethod:"Njia ya Malipo", registeredPhone:"Simu Iliyosajiliwa",
+    submitWithdrawal:"Tuma Ombi la Uondoaji", withdrawalHistory:"Historia ya Uondoaji", gross:"Jumla Ghafi",
+    qualWarn:"⚠️ Unahitaji referrals 2 amilifu ili kutoa pesa.",
+    qualOk:"✅ Unastahili uondoaji.",
+    qualElgErr:"❌ Unahitaji referrals 2 amilifu.",
+    qualElgOk:"✅ Unastahili. Weka kiasi hapa chini."
+  }
+};
+
+/* ==== STATE ==== */
+let CURRENT_USER = null;
+let CURRENT_ROLE = null;
+let AUTH_TOKEN = null;
+
+/* ==== THEME ==== */
+let dark = true;
+function toggleTheme(){
+  dark = !dark;
+  document.body.classList.toggle("light", !dark);
+  document.getElementById("themeBtn").textContent = dark ? "🌞" : "🌙";
+}
+
+/* ==== LANGUAGE ==== */
+function toggleLang(){
+  lang = lang === "en" ? "sw" : "en";
+  document.getElementById("langBtn").textContent = lang === "en" ? "🌐 EN" : "🌐 SW";
+  applyLang();
+}
+
+function applyLang(){
+  document.querySelectorAll("[data-t]").forEach(el => {
+    const k = el.getAttribute("data-t");
+    if(T[lang][k] !== undefined) el.textContent = T[lang][k];
+  });
+}
+
+function t(key){ return T[lang][key] || T.en[key] || key; }
+
+/* ==== NAV ==== */
+function go(view){
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("v-"+view).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  updateNav();
+}
+
+function updateNav(){
+  const logged = !!CURRENT_USER;
+  document.getElementById("navAuth").style.display = logged ? "none" : "inline-flex";
+  document.getElementById("navLogout").style.display = logged ? "inline-flex" : "none";
+}
+
+function logout(){
+  CURRENT_USER = null;
+  CURRENT_ROLE = null;
+  AUTH_TOKEN = null;
+  updateNav();
+  go("home");
+}
+
+/* ==== API CALLS ==== */
+async function apiCall(route, data = {}) {
+  try {
+    const payload = {
+      route: route,
+      data: data,
+      token: AUTH_TOKEN || ""
+    };
+    
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await response.json();
+    return result;
+  } catch (err) {
+    return { ok: false, error: "Network error: " + err.message };
+  }
+}
+
+/* ==== AUTH ==== */
+function authTab(panel, btn){
+  document.querySelectorAll("#v-auth .panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("p-"+panel).classList.add("active");
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  clearMsg(["loginMsg","regMsg"]);
+}
+
+async function handleLogin(){
+  const u = val("loginUsername").toLowerCase();
+  const p = document.getElementById("loginPass").value;
+  
+  if(!u||!p){showMsg("loginMsg","Please enter username and password.","err");return;}
+  
+  const btn = document.querySelector("#p-login button");
+  btn.disabled = true;
+  btn.textContent = "Logging in...";
+  
+  const result = await apiCall("auth/login", { username: u, password: p });
+  
+  btn.disabled = false;
+  btn.textContent = t("loginBtn");
+  
+  if(!result.ok){
+    showMsg("loginMsg", result.error || "Login failed.","err");
+    return;
+  }
+  
+  CURRENT_ROLE = result.role;
+  AUTH_TOKEN = result.token;
+  
+  if(result.role === "ADMIN"){
+    CURRENT_USER = { role: "ADMIN", username: result.username };
+    updateNav();
+    loadAdmin();
+    go("admin");
+  } else {
+    CURRENT_USER = result.user;
+    updateNav();
+    loadUser(CURRENT_USER);
+    go("user");
+  }
+}
+
+async function handleRegister(){
+  const u = val("regUsername").toLowerCase();
+  const phone = val("regPhone");
+  const p = document.getElementById("regPass").value;
+  const cp = document.getElementById("regConfirmPass").value;
+  const refCode = val("regRef").toUpperCase();
+  
+  if(u.length<4){showMsg("regMsg","Username must be at least 4 characters.","err");return;}
+  if(phone.length<10){showMsg("regMsg","Phone must be at least 10 digits.","err");return;}
+  if(p.length<8){showMsg("regMsg","Password must be at least 8 characters.","err");return;}
+  if(p!==cp){showMsg("regMsg","Passwords do not match.","err");return;}
+  
+  const btn = document.querySelector("#p-register button");
+  btn.disabled = true;
+  btn.textContent = "Registering...";
+  
+  const result = await apiCall("auth/register", {
+    username: u,
+    phone: phone,
+    password: p,
+    confirmPassword: cp,
+    referralCode: refCode
+  });
+  
+  btn.disabled = false;
+  btn.textContent = t("registerBtn");
+  
+  if(!result.ok){
+    showMsg("regMsg", result.error || "Registration failed.","err");
+    return;
+  }
+  
+  CURRENT_ROLE = result.role;
+  AUTH_TOKEN = result.token;
+  CURRENT_USER = result.user;
+  
+  updateNav();
+  loadUser(CURRENT_USER);
+  go("user");
+}
+
+/* ==== USER LOADER ==== */
+function loadUser(user){
+  document.getElementById("showBusiness").textContent = SETTINGS.business;
+  const activation = document.getElementById("userActivationArea");
+  const dashboard = document.getElementById("mainDashboard");
+  
+  if(user.paymentStatus !== "PAID"){
+    activation.style.display = "block";
+    dashboard.style.display = "none";
+    renderActivationState(user);
+    return;
+  }
+  
+  activation.style.display = "none";
+  dashboard.style.display = "block";
+  
+  document.getElementById("userName").textContent = user.username;
+  document.getElementById("userAvatar").textContent = user.username.charAt(0).toUpperCase();
+  document.getElementById("infoUsername").textContent = user.username;
+  document.getElementById("infoPhone").textContent = user.phone;
+  document.getElementById("refLink").value = "https://yourwebsite.com/?ref="+user.username;
+  document.getElementById("wdPhone").value = user.phone;
+  
+  renderWallet(user);
+  renderReferrals(user);
+  renderTransactions(user);
+  renderWithdrawals(user);
+  renderNotifications(user);
+  renderQualification(user);
+  
+  document.getElementById("userNotifDot").style.display = user.unreadNotifications > 0 ? "inline-block" : "none";
+}
+
+function renderActivationState(user){
+  const rej = document.getElementById("rejectedBanner");
+  const pend = document.getElementById("pendingBanner");
+  const form = document.getElementById("actFormArea");
+  const pendMsg = document.getElementById("pendingFormMsg");
+  
+  if(user.paymentStatus === "REJECTED"){
+    rej.style.display = "block"; pend.style.display = "none"; form.style.display = "block"; pendMsg.style.display = "none";
+  } else if(user.paymentStatus === "PENDING_VERIFICATION"){
+    rej.style.display = "none"; pend.style.display = "block"; form.style.display = "none"; pendMsg.style.display = "block";
+  } else {
+    rej.style.display = "none"; pend.style.display = "none"; form.style.display = "block"; pendMsg.style.display = "none";
+  }
+}
+
+async function submitActivationPayment(){
+  const sms = val("actSms");
+  const ref = val("actRef").toUpperCase();
+  
+  if(!sms){showMsg("actMsg","Please paste your payment SMS.","err");return;}
+  if(!ref){showMsg("actMsg","Please enter transaction reference.","err");return;}
+  
+  const btn = document.querySelector("#actFormArea button");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+  
+  const result = await apiCall("user/submit-payment", { sms: sms, ref: ref });
+  
+  btn.disabled = false;
+  btn.textContent = t("submitBtn");
+  
+  if(!result.ok){
+    showMsg("actMsg", result.error || "Submission failed.","err");
+    return;
+  }
+  
+  CURRENT_USER = result.user;
+  loadUser(CURRENT_USER);
+  showMsg("actMsg", result.message || "Payment submitted successfully.","ok");
+}
+
+/* ==== RENDER FUNCTIONS ==== */
+function renderWallet(user){
+  const available = user.wallet.balance - user.wallet.pendingWithdrawal;
+  document.getElementById("dashAvailable").textContent = money(available);
+  document.getElementById("dashEarned").textContent = money(user.wallet.totalEarned);
+  document.getElementById("dashPendingWd").textContent = money(user.wallet.pendingWithdrawal);
+  document.getElementById("dashTotalRefs").textContent = user.referrals.length;
+  document.getElementById("walletBalance").textContent = money(user.wallet.balance);
+  document.getElementById("walletPending").textContent = money(user.wallet.pendingWithdrawal);
+  document.getElementById("walletAvailable").textContent = money(available);
+  document.getElementById("walletWithdrawn").textContent = money(user.wallet.totalWithdrawn);
+}
+
+function renderReferrals(user){
+  const tbody = document.getElementById("referralsRows");
+  if(user.referrals.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5" class="muted">${t("noReferrals")}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = user.referrals.map(r => `
+    <tr>
+      <td>${esc(r.username)}</td>
+      <td>${r.phone}</td>
+      <td><span class="badge badge-blue">${r.level}</span></td>
+      <td>${money(r.reward)}</td>
+      <td><span class="badge ${r.status==="ACTIVE"?"badge-green":r.status==="REJECTED"?"badge-red":"badge-orange"}">${r.status}</span></td>
+    </tr>
+  `).join("");
+}
+
+function renderTransactions(user){
+  const tbody = document.getElementById("transactionsRows");
+  if(user.transactions.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = user.transactions.map(t => `
+    <tr>
+      <td>${t.id}</td>
+      <td>${t.type}</td>
+      <td>${esc(t.source)}</td>
+      <td>${money(t.amount)}</td>
+      <td><span class="badge ${t.status==="SUCCESS"?"badge-green":t.status==="FAILED"?"badge-red":"badge-orange"}">${t.status}</span></td>
+      <td>${money(t.balanceAfter)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderWithdrawals(user){
+  const tbody = document.getElementById("withdrawRows");
+  if(user.withdrawals.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5" class="muted">No withdrawals yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = user.withdrawals.map(w => `
+    <tr>
+      <td>${w.id}</td>
+      <td>${money(w.gross)}</td>
+      <td>${money(w.fee)}</td>
+      <td><b>${money(w.net)}</b></td>
+      <td><span class="badge ${w.status==="APPROVED"?"badge-green":w.status==="REJECTED"?"badge-red":"badge-orange"}">${w.status}</span></td>
+    </tr>
+  `).join("");
+}
+
+function renderNotifications(user){
+  const box = document.getElementById("notificationList");
+  if(user.notifications.length === 0){
+    box.innerHTML = `<p class="muted">No notifications.</p>`;
+    return;
+  }
+  box.innerHTML = user.notifications.map(n => `
+    <div class="alert alert-${n.type}"><b>${esc(n.title)}</b> ${esc(n.msg)} <span class="muted" style="font-size:11px;float:right">${n.time}</span></div>
+  `).join("");
+  
+  const top = document.getElementById("userTopNotif");
+  if(user.unreadNotifications > 0){
+    top.innerHTML = `<div class="alert alert-${user.notifications[0].type}"><b>${esc(user.notifications[0].title)}</b> ${esc(user.notifications[0].msg)}</div>`;
+    top.style.display = "block";
+  }
+}
+
+function renderQualification(user){
+  const count = activeDirectRefs(user);
+  const canWithdraw = count >= 2;
+  
+  document.getElementById("qualificationBox").innerHTML = canWithdraw
+    ? `<div class="alert alert-ok">${t("qualOk")} (${count} active direct referrals)</div>`
+    : `<div class="alert alert-warn">${t("qualWarn")} (${count}/2)</div>`;
+  
+  document.getElementById("withdrawEligibilityBox").innerHTML = canWithdraw
+    ? `<div class="alert alert-ok">${t("qualElgOk")} (Min: ${money(SETTINGS.minWithdraw)}, Max: ${money(SETTINGS.maxWithdraw)})</div>`
+    : `<div class="alert alert-err">${t("qualElgErr")} (${count}/2)</div>`;
+  
+  document.getElementById("wdBtn").disabled = !canWithdraw;
+}
+
+function activeDirectRefs(user){
+  return user.referrals.filter(r => r.status === "ACTIVE" && r.level === "LEVEL_1").length;
+}
+
+function calculateWithdrawalPreview(){
+  const amt = Number(document.getElementById("wdAmount").value||0);
+  const box = document.getElementById("withdrawPreview");
+  
+  if(!amt){box.style.display="none";return;}
+  
+  const fee = amt * (SETTINGS.feePercent/100);
+  const net = amt - fee;
+  
+  box.style.display = "block";
+  box.innerHTML = `<b>📊 Withdrawal Breakdown:</b><br>Requested: <b>${money(amt)}</b><br>Company Fee (10%): <b>${money(fee)}</b><br><br>You Will Receive (90%): <b style="color:var(--green)">${money(net)}</b>`;
+}
+
+async function requestWithdrawal(){
+  const amt = Number(document.getElementById("wdAmount").value||0);
+  const method = document.getElementById("wdMethod").value;
+  
+  if(activeDirectRefs(CURRENT_USER) < 2){showMsg("wdMsg","You need 2 active direct referrals.","err");return;}
+  
+  if(amt < SETTINGS.minWithdraw || amt > SETTINGS.maxWithdraw){
+    showMsg("wdMsg", `Amount must be between ${money(SETTINGS.minWithdraw)} and ${money(SETTINGS.maxWithdraw)}.`,"err");
+    return;
+  }
+  
+  const available = CURRENT_USER.wallet.balance - CURRENT_USER.wallet.pendingWithdrawal;
+  if(amt > available){showMsg("wdMsg","Insufficient available balance.","err");return;}
+  
+  const btn = document.getElementById("wdBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+  
+  const result = await apiCall("user/request-withdrawal", { amount: amt, method: method });
+  
+  btn.disabled = false;
+  btn.textContent = t("submitWithdrawal");
+  
+  if(!result.ok){
+    showMsg("wdMsg", result.error || "Withdrawal request failed.","err");
+    return;
+  }
+  
+  CURRENT_USER = result.user;
+  loadUser(CURRENT_USER);
+  document.getElementById("wdAmount").value = "";
+  document.getElementById("withdrawPreview").style.display = "none";
+  showMsg("wdMsg","Withdrawal request sent to admin.","ok");
+}
+
+/* ==== USER TABS ==== */
+function userTab(id, btn){
+  document.querySelectorAll("#mainDashboard .panel").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  
+  if(id === "u-notify" && CURRENT_USER){
+    CURRENT_USER.unreadNotifications = 0;
+    document.getElementById("userNotifDot").style.display = "none";
+    document.getElementById("userTopNotif").style.display = "none";
+    apiCall("user/mark-notifications-read");
+  }
+  
+  if(CURRENT_USER && CURRENT_ROLE !== "ADMIN") loadUser(CURRENT_USER);
+}
+
+/* ==== ADMIN ==== */
+async function loadAdmin(){
+  const result = await apiCall("admin/analytics");
+  
+  if(!result.ok){
+    alert("Admin access denied. Please login again.");
+    logout();
+    return;
+  }
+  
+  const d = result.data;
+  document.getElementById("sTotalUsers").textContent = d.totalUsers;
+  document.getElementById("sActiveUsers").textContent = d.activeUsers;
+  document.getElementById("sPendingUsers").textContent = d.pendingUsers;
+  document.getElementById("sTotalPay").textContent = money(d.totalPayments);
+  document.getElementById("sPendingPay").textContent = d.pendingPayments;
+  document.getElementById("sRewards").textContent = money(d.rewardsDistributed);
+  document.getElementById("sL1").textContent = money(d.l1Rewards);
+  document.getElementById("sL2").textContent = money(d.l2Rewards);
+  document.getElementById("sL3").textContent = money(d.l3Rewards);
+  document.getElementById("sL4").textContent = money(d.l4Rewards);
+  document.getElementById("sTotalWd").textContent = money(d.totalWithdrawals);
+  document.getElementById("sPendingWd").textContent = money(d.pendingWithdrawals);
+  
+  document.getElementById("payDot").style.display = d.pendingPayCount > 0 ? "inline-block" : "none";
+  document.getElementById("refDot").style.display = d.pendingRefCount > 0 ? "inline-block" : "none";
+  document.getElementById("wdDot").style.display = d.pendingWdCount > 0 ? "inline-block" : "none";
+  
+  const alertBox = document.getElementById("adminNotifArea");
+  const tasks = d.pendingPayCount + d.pendingRefCount + d.pendingWdCount;
+  if(tasks > 0){
+    alertBox.style.display = "block";
+    alertBox.innerHTML = `<div class="alert alert-warn">🔔 <b>Pending Tasks:</b> ${tasks} total — Payments: ${d.pendingPayCount}, Referrals: ${d.pendingRefCount}, Withdrawals: ${d.pendingWdCount}</div>`;
+  } else {
+    alertBox.style.display = "none";
+  }
+  
+  // Load settings
+  const settingsResult = await apiCall("admin/settings");
+  if(settingsResult.ok){
+    const s = settingsResult.data;
+    document.getElementById("setFee").value = s.joiningFee;
+    document.getElementById("setMinWd").value = s.minWithdraw;
+    document.getElementById("setMaxWd").value = s.maxWithdraw;
+    document.getElementById("setFeePct").value = s.feePercent;
+    document.getElementById("setL1").value = s.level1Reward;
+    document.getElementById("setL2").value = s.level2Reward;
+    document.getElementById("setL3").value = s.level3Reward;
+    document.getElementById("setL4").value = s.level4Reward;
+    document.getElementById("setBusiness").value = s.businessNumber;
+    document.getElementById("setProvider").value = s.provider;
+  }
+  
+  renderAdminPayments();
+  renderAdminReferralRequests();
+  renderAdminWithdrawalRequests();
+  renderAdminUsers();
+  renderAdminAudit();
+  renderBalanceSearchUsers();
+}
+
+async function renderAdminPayments(){
+  const q = (document.getElementById("searchPayments")?.value||"").trim();
+  const result = await apiCall("admin/payments");
+  
+  if(!result.ok){document.getElementById("adminPaymentRows").innerHTML = `<tr><td colspan="7" class="muted">Error loading payments.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("adminPaymentRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(p => 
+      (p.username||"").toLowerCase().includes(q.toLowerCase()) ||
+      (p.phone||"").includes(q) ||
+      (p.ref||"").toLowerCase().includes(q.toLowerCase())
+    );
+  }
+  
+  document.getElementById("paymentsCount").textContent = data.length + " results";
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="7" class="muted">No payments yet.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td><b>${esc(p.username)}</b></td>
+      <td>${p.phone}</td>
+      <td><b>${esc(p.ref)}</b></td>
+      <td style="max-width:200px;word-break:break-all">${esc(p.sms)}</td>
+      <td><span class="badge badge-orange">PENDING</span></td>
+      <td>${p.submittedAt}</td>
+      <td>
+        <button class="btn-green" style="padding:8px 11px;font-size:12px" onclick="adminVerifyPayment('${p.id}','VERIFY')">Verify</button>
+        <button class="btn-red" style="padding:8px 11px;font-size:12px" onclick="adminVerifyPayment('${p.id}','REJECT')">Reject</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function adminVerifyPayment(payId, action){
+  if(!await confirmAdmin()) return;
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  const result = await apiCall(action === "VERIFY" ? "admin/verify-payment" : "admin/reject-payment", { paymentId: payId });
+  
+  btn.disabled = false;
+  btn.textContent = action === "VERIFY" ? "Verify" : "Reject";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Operation failed."));
+    return;
+  }
+  
+  alert(result.ok ? "✅ " + result.message : "❌ Operation failed.");
+  loadAdmin();
+}
+
+async function renderAdminReferralRequests(){
+  const q = (document.getElementById("searchReferrals")?.value||"").trim();
+  const result = await apiCall("admin/referrals");
+  
+  if(!result.ok){document.getElementById("adminReferralsRows").innerHTML = `<tr><td colspan="6" class="muted">Error loading referrals.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("adminReferralsRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(r => 
+      (r.parentUsername||"").toLowerCase().includes(q.toLowerCase()) ||
+      (r.childUsername||"").toLowerCase().includes(q.toLowerCase())
+    );
+  }
+  
+  document.getElementById("referralsCount").textContent = data.length + " results";
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">No referral requests yet.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><b>${esc(r.parentUsername)}</b></td>
+      <td><b>${esc(r.childUsername)}</b></td>
+      <td>${r.childPhone}</td>
+      <td><span class="badge badge-blue">${r.level}</span></td>
+      <td>${money(r.reward)}</td>
+      <td>
+        <button class="btn-green" style="padding:8px 11px;font-size:12px" onclick="adminVerifyReferral('${r.id}','VERIFY')">Verify</button>
+        <button class="btn-red" style="padding:8px 11px;font-size:12px" onclick="adminVerifyReferral('${r.id}','REJECT')">Reject</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function adminVerifyReferral(refId, action){
+  if(!await confirmAdmin()) return;
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  const result = await apiCall(action === "VERIFY" ? "admin/verify-referral" : "admin/reject-referral", { referralId: refId });
+  
+  btn.disabled = false;
+  btn.textContent = action === "VERIFY" ? "Verify" : "Reject";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Operation failed."));
+    return;
+  }
+  
+  alert(result.ok ? "✅ " + result.message : "❌ Operation failed.");
+  loadAdmin();
+}
+
+async function renderAdminWithdrawalRequests(){
+  const q = (document.getElementById("searchWithdrawals")?.value||"").trim();
+  const result = await apiCall("admin/withdrawals");
+  
+  if(!result.ok){document.getElementById("adminWithdrawRows").innerHTML = `<tr><td colspan="9" class="muted">Error loading withdrawals.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("adminWithdrawRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(w => 
+      (w.username||"").toLowerCase().includes(q.toLowerCase()) ||
+      (w.phone||"").includes(q)
+    );
+  }
+  
+  document.getElementById("withdrawalsCount").textContent = data.length + " results";
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="9" class="muted">No withdrawal requests yet.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(w => `
+    <tr>
+      <td><b>${esc(w.username)}</b></td>
+      <td>${w.phone}</td>
+      <td>${money(w.gross)}</td>
+      <td>${money(w.fee)}</td>
+      <td><b style="color:var(--green)">${money(w.net)}</b></td>
+      <td><span class="badge badge-orange">PENDING</span></td>
+      <td>${w.submittedAt}</td>
+      <td><span class="badge ${w.qualified?"badge-green":"badge-red"}">${w.qualified?"YES":"NO"}</span></td>
+      <td>
+        <button class="btn-green" style="padding:8px 11px;font-size:12px" onclick="adminVerifyWithdrawal('${w.id}','APPROVE')">Approve</button>
+        <button class="btn-red" style="padding:8px 11px;font-size:12px" onclick="adminVerifyWithdrawal('${w.id}','REJECT')">Reject</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function adminVerifyWithdrawal(wdId, action){
+  if(!await confirmAdmin()) return;
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  const result = await apiCall(action === "APPROVE" ? "admin/approve-withdrawal" : "admin/reject-withdrawal", { withdrawalId: wdId });
+  
+  btn.disabled = false;
+  btn.textContent = action === "APPROVE" ? "Approve" : "Reject";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Operation failed."));
+    return;
+  }
+  
+  alert(result.ok ? "✅ " + result.message : "❌ Operation failed.");
+  loadAdmin();
+}
+
+async function renderAdminUsers(){
+  const q = (document.getElementById("searchUsers")?.value||"").trim();
+  const result = await apiCall("admin/users");
+  
+  if(!result.ok){document.getElementById("adminUsersRows").innerHTML = `<tr><td colspan="6" class="muted">Error loading users.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("adminUsersRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(u => 
+      (u.username||"").toLowerCase().includes(q.toLowerCase()) ||
+      (u.phone||"").includes(q)
+    );
+  }
+  
+  document.getElementById("usersCount").textContent = data.length + " results";
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">No users yet.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(u => `
+    <tr>
+      <td><b>${esc(u.username)}</b></td>
+      <td>${u.phone}</td>
+      <td><span class="badge ${u.paymentStatus==="PAID"?"badge-green":u.paymentStatus==="REJECTED"?"badge-red":"badge-orange"}">${u.paymentStatus}</span></td>
+      <td><span class="badge ${u.accountStatus==="ACTIVE"?"badge-green":"badge-red"}">${u.accountStatus}</span></td>
+      <td>${u.referrals}</td>
+      <td><b>${money(u.totalEarned)}</b></td>
+    </tr>
+  `).join("");
+}
+
+async function renderBalanceSearchUsers(){
+  const q = (document.getElementById("searchBalanceUsers")?.value||"").trim();
+  const result = await apiCall("admin/users");
+  
+  if(!result.ok){document.getElementById("balanceSearchRows").innerHTML = `<tr><td colspan="4" class="muted">Error loading users.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("balanceSearchRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(u => 
+      (u.username||"").toLowerCase().includes(q.toLowerCase()) ||
+      (u.phone||"").includes(q)
+    );
+  }
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4" class="muted">No users found.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(u => `
+    <tr>
+      <td><b>${esc(u.username)}</b></td>
+      <td>${u.phone}</td>
+      <td>${money(u.balance)}</td>
+      <td><button class="btn-pri" style="padding:8px 11px;font-size:12px" onclick="pickUserForBalance('${u.username}')">Pick</button></td>
+    </tr>
+  `).join("");
+}
+
+function pickUserForBalance(username){
+  document.getElementById("balUser").value = username;
+  document.getElementById("statusUser").value = username;
+  alert("✅ User selected: " + username);
+}
+
+async function renderAdminAudit(){
+  const q = (document.getElementById("searchAudit")?.value||"").trim();
+  const result = await apiCall("admin/audit");
+  
+  if(!result.ok){document.getElementById("auditRows").innerHTML = `<tr><td colspan="5" class="muted">Error loading audit logs.</td></tr>`;return;}
+  
+  const tbody = document.getElementById("auditRows");
+  let data = result.data || [];
+  
+  if(q){
+    data = data.filter(a => 
+      (a.action||"").toLowerCase().includes(q.toLowerCase()) ||
+      (a.username||"").toLowerCase().includes(q.toLowerCase()) ||
+      (a.target||"").toLowerCase().includes(q.toLowerCase()) ||
+      (a.details||"").toLowerCase().includes(q.toLowerCase())
+    );
+  }
+  
+  document.getElementById("auditCount").textContent = data.length + " results";
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5" class="muted">No audit logs yet.</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(a => `
+    <tr>
+      <td><span class="badge badge-blue">${a.action}</span></td>
+      <td><b>${esc(a.username||"system")}</b></td>
+      <td>${a.target}</td>
+      <td>${esc(a.details)}</td>
+      <td>${a.time}</td>
+    </tr>
+  `).join("");
+}
+
+async function adminBalanceEdit(){
+  if(!await confirmAdmin()) return;
+  
+  const username = val("balUser");
+  const mode = document.getElementById("balMode").value;
+  const amount = Number(val("balAmount")||0);
+  const reason = val("balReason");
+  
+  if(!username||amount<=0){alert("Please enter valid username and amount.");return;}
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  const result = await apiCall("admin/balance-edit", { username: username, mode: mode, amount: amount, reason: reason });
+  
+  btn.disabled = false;
+  btn.textContent = "Apply Change";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Operation failed."));
+    return;
+  }
+  
+  alert("✅ Balance adjusted successfully.");
+  document.getElementById("balUser").value = "";
+  document.getElementById("balAmount").value = "";
+  document.getElementById("balReason").value = "";
+  loadAdmin();
+}
+
+async function adminChangeStatus(){
+  if(!await confirmAdmin()) return;
+  
+  const username = val("statusUser");
+  const status = document.getElementById("statusValue").value;
+  const reason = val("statusReason");
+  
+  if(!username){alert("Please enter username.");return;}
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  const result = await apiCall("admin/change-status", { username: username, status: status, reason: reason });
+  
+  btn.disabled = false;
+  btn.textContent = "Change Status";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Operation failed."));
+    return;
+  }
+  
+  alert("✅ Status updated successfully.");
+  document.getElementById("statusUser").value = "";
+  document.getElementById("statusReason").value = "";
+  loadAdmin();
+}
+
+async function adminSaveSettings(){
+  if(!await confirmAdmin()) return;
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+  
+  const data = {
+    joiningFee: Number(val("setFee")),
+    minWithdraw: Number(val("setMinWd")),
+    maxWithdraw: Number(val("setMaxWd")),
+    feePercent: Number(val("setFeePct")),
+    level1Reward: Number(val("setL1")),
+    level2Reward: Number(val("setL2")),
+    level3Reward: Number(val("setL3")),
+    level4Reward: Number(val("setL4")),
+    businessNumber: val("setBusiness"),
+    provider: val("setProvider")
+  };
+  
+  const result = await apiCall("admin/save-settings", data);
+  
+  btn.disabled = false;
+  btn.textContent = "Save Settings";
+  
+  if(!result.ok){
+    alert("❌ " + (result.error || "Failed to save settings."));
+    return;
+  }
+  
+  alert("✅ Settings saved successfully.");
+  loadAdmin();
+}
+
+function adminTab(id, btn){
+  document.querySelectorAll("#v-admin .panel").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".adm-btn").forEach(b => {b.classList.remove("btn-pri");b.classList.add("btn-sec")});
+  btn.classList.remove("btn-sec");
+  btn.classList.add("btn-pri");
+  loadAdmin();
+}
+
+async function confirmAdmin(){
+  const pw = prompt("Enter admin password:");
+  if(!pw) return false;
+  
+  const result = await apiCall("admin/verify-password", { password: pw });
+  
+  if(!result.ok){
+    alert("❌ Incorrect admin password!");
+    return false;
+  }
+  
+  return true;
+}
+
+/* ==== UTILS ==== */
+function copyRef(){
+  const input = document.getElementById("refLink");
+  input.select();
+  document.execCommand("copy");
+  alert("✅ Referral link copied!");
+}
+
+function money(n){return "TZS " + Number(n||0).toLocaleString();}
+
+function val(id){return document.getElementById(id).value.trim();}
+
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"})[m]);}
+
+function showMsg(id,msg,type){document.getElementById(id).innerHTML = `<div class="alert alert-${type}">${msg}</div>`;}
+
+function clearMsg(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML="";});}
+
+/* ==== INIT ==== */
+window.onload = function(){
+  applyLang();
+  updateNav();
+};
+</script>
+</body>
+</html>
